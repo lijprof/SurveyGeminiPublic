@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Process Flowchart</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'base',
+            themeVariables: {
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                lineColor: '#64748b',
+                textColor: '#0f172a',
+                primaryColor: '#ffffff',
+                edgeLabelBackground: '#ffffff'
+            },
+            flowchart: {
+                curve: 'basis' // Smoother line curves
+            }
+        });
+    </script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+        .flowchart-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05), 0 12px 48px rgba(0,0,0,0.08);
+            max-width: 1000px;
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid #e2e8f0;
+        }
+        h2 {
+            text-align: center;
+            color: #1e293b;
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="flowchart-container">
+        <h2>AI Interview Generation Process</h2>
+        <div class="mermaid">
+            flowchart TD
+                %% Define Node Styles
+                classDef terminal fill:#f8fafc,stroke:#475569,stroke-width:2px,color:#0f172a,rx:30px,ry:30px
+                classDef io fill:#f0fdf4,stroke:#22c55e,stroke-width:2px,color:#14532d
+                classDef process fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e3a8a
+                classDef decision fill:#fefce8,stroke:#eab308,stroke-width:2px,color:#854d0e
+                classDef storage fill:#faf5ff,stroke:#a855f7,stroke-width:2px,color:#581c87
+                classDef highlightProcess fill:#dbeafe,stroke:#2563eb,stroke-width:3px,color:#1e3a8a
+                
+                %% Distinct Branch Styles
+                classDef validBranch fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#14532d
+                classDef invalidBranch fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#7f1d1d
+
+                %% Control Flow
+                Start([Start / Await Input]):::terminal --> Input[/Receive Participant Answer/]:::io
+                
+          
+                
+                Input --> Validate["Validate Response Content<br><span style='font-size:12px; color:#64748b;'>validate_gemini_response<br>Checks if answer addresses<br> the Question adequetely</span>"]:::process
+                
+                Validate --> IsValid{"Is Answer<br>Valid & On-Topic?"}:::decision
+
+                %% Branch 1: Valid Path
+                IsValid -- "<span style='color:#15803d; font-weight:600;'>Yes</span>" --> Fetch["Continue the Interview<br><span style='font-size:12px;'>The interview guide and <br> chat history determines <br>new section or follow up</span>"]:::validBranch
+                Fetch --> Assemble["Assemble Context Prompt"]:::highlightProcess
+
+                %% Branch 2: Invalid Path
+                IsValid -- "<span style='color:#b91c1c; font-weight:600;'>No (Invalid/Off-topic)</span>" --> HandleInvalid["Flag for Clarification<br><span style='font-size:12px;'>When response is invalid, the <br> question is reworded/clarified </span>"]:::invalidBranch
+                HandleInvalid --> Assemble
+
+                %% Data Flow (Dashed links representing data feeding into the process)
+                Guide[("Interview Guidelines<br><span style='font-size:11px; font-weight:normal; color:#6b21a8;'>PDFs: Flow Summary<br>& Training Scenarios</span>")]:::storage -.-> Assemble
+                History[("Chat History<br><span style='font-size:11px; font-weight:normal; color:#6b21a8;'>Drives adaptive questioning:<br>evaluates & skips irrelevant topics</span>")]:::storage -.-> Assemble
+                Rules[("Behavioral Rules<br><span style='font-size:11px; font-weight:normal; color:#6b21a8;'>Empathetic persona, no<br>meta-info, conversational</span>")]:::storage -.-> Assemble
+
+                %% Unified Generation Step
+                Assemble --> Generate["Generate Response<br><span style='font-size:12px; color:#64748b;'>Gemini generates Next<br>Question OR Clarification</span>"]:::highlightProcess
+
+                %% Convergence & Output
+                Generate --> Output[/Output AI Response to Participant/]:::io
+
+                Output --> End([End / Await Next Input]):::terminal
+        </div>
+    </div>
+
+</body>
+</html>
